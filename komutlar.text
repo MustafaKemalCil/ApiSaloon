@@ -1,0 +1,13 @@
+ngrok config add-authtoken 36e94AwMSroAUBFuzOXd1MNgYhd_74qLbQXWmdM4USSLsgEKe
+ngrok http 8000
+flutter build apk --debug
+php artisan serve
+flutter run
+cd C:\cloudflared
+cloudflared tunnel --url http://localhost:8000
+https://sourceforge.net/projects/cloudflare-tunnel.mirror/files/2025.10.0/cloudflared-windows-amd64.exe/download
+.
+.
+.
+.
+
