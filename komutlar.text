@@ -4,10 +4,14 @@ flutter build apk --debug
 php artisan serve
 flutter run
 cd C:\cloudflared
-cloudflared tunnel --url http://localhost:8000
+.\cloudflared tunnel --url http://localhost:8000
 https://sourceforge.net/projects/cloudflare-tunnel.mirror/files/2025.10.0/cloudflared-windows-amd64.exe/download
-.
-.
-.
+carlane.ns.cloudflare.com
+carlane.ns.cloudflare.com
+Zone ID
+b195ef2a799e2cd379ae3bad6fab8077
+Account ID
+ef0c24afba91c35e26e7569c68cea628
+ docker compose up -d
 .
 
