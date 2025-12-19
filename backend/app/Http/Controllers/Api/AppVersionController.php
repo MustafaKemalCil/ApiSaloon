@@ -5,10 +5,48 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Models\AppVersion;
 use App\Http\Controllers\Controller; 
+
+/**
+ * @OA\Tag(
+ *     name="App Versions",
+ *     description="Flutter uygulama sürümleri ile ilgili işlemler"
+ * )
+ */
 class AppVersionController extends Controller
 {
     /**
      * Flutter uygulamasına en son sürümü döndüren endpoint
+     */
+     /**
+     * @OA\Post(
+     *     path="/api/app-version/latest",
+     *     summary="Flutter uygulamasına en son sürümü döndürür",
+     *     tags={"App Versions"},
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="platform", type="string", example="android", description="android veya ios"),
+     *             @OA\Property(property="version", type="string", example="1.0.0", description="Mevcut kullanıcı sürümü")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="En son sürüm veya zaten en güncel sürüm",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="You are using the latest version"),
+     *             @OA\Property(property="version", type="string", example="2.0.0"),
+     *             @OA\Property(property="url", type="string", example="https://example.com/app.apk")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Sürüm bulunamadı",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No version found")
+     *         )
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
      */
    public function latest(Request $request)
 {
@@ -34,6 +72,34 @@ class AppVersionController extends Controller
 
     /**
      * Yeni sürüm ekleme (dosya yükleme yerine string path)
+     */
+    /**
+     * @OA\Post(
+     *     path="/api/app-version",
+     *     summary="Yeni sürüm ekle",
+     *     tags={"App Versions"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"platform","version","file_path"},
+     *             @OA\Property(property="platform", type="string", example="android"),
+     *             @OA\Property(property="version", type="string", example="2.0.0"),
+     *             @OA\Property(property="file_path", type="string", example="https://example.com/app.apk")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Yeni sürüm oluşturuldu",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="platform", type="string"),
+     *             @OA\Property(property="version", type="string"),
+     *             @OA\Property(property="file_path", type="string"),
+     *             @OA\Property(property="created_at", type="string"),
+     *             @OA\Property(property="updated_at", type="string")
+     *         )
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
      */
     public function store(Request $request)
     {

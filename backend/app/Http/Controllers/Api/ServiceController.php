@@ -4,10 +4,42 @@ namespace App\Http\Controllers\Api;// istersen App\Http\Controllers\Api da yapab
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
-
+/**
+ * @OA\Tag(
+ *     name="Services",
+ *     description="Hizmetler ile ilgili işlemler"
+ * )
+ */
 class ServiceController extends Controller
 {
     // Hizmet listeleme
+     /**
+     * @OA\Get(
+     *     path="/api/services",
+     *     summary="Hizmet listesini getirir",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Hizmet adı ile arama",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Hizmet listesi",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="description", type="string", nullable=true),
+     *                 @OA\Property(property="cost", type="number", format="float", nullable=true)
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         $query = Service::query();
@@ -23,12 +55,65 @@ class ServiceController extends Controller
     }
 
     // Tek Hizmet görüntüleme
+    /**
+     * @OA\Get(
+     *     path="/api/services/{service}",
+     *     summary="Tek hizmeti getirir",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Hizmet ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Hizmet detayları",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string", nullable=true),
+     *             @OA\Property(property="cost", type="number", format="float", nullable=true)
+     *         )
+     *     )
+     * )
+     */
     public function show(Service $service)
     {
         return response()->json($service);
     }
 
     // Hizmet ekleme
+     /**
+     * @OA\Post(
+     *     path="/api/services",
+     *     summary="Yeni hizmet ekler",
+     *     tags={"Services"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string", nullable=true),
+     *             @OA\Property(property="cost", type="number", format="float", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Hizmet başarıyla eklendi",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="service", type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="description", type="string", nullable=true),
+     *                 @OA\Property(property="cost", type="number", format="float", nullable=true)
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -47,6 +132,42 @@ class ServiceController extends Controller
     }
 
     // Hizmet güncelleme
+     /**
+     * @OA\Put(
+     *     path="/api/services/{service}",
+     *     summary="Hizmeti günceller",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Hizmet ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string", nullable=true),
+     *             @OA\Property(property="cost", type="number", format="float", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Hizmet başarıyla güncellendi",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="service", type="object",
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="description", type="string", nullable=true),
+     *                 @OA\Property(property="cost", type="number", format="float", nullable=true)
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function update(Request $request, Service $service)
     {
         $validated = $request->validate([
@@ -66,6 +187,36 @@ class ServiceController extends Controller
     }
 
     // Hizmet silme
+     /**
+     * @OA\Delete(
+     *     path="/api/services/{service}",
+     *     summary="Hizmeti siler",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Hizmet ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Hizmet başarıyla silindi",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string"),
+     *             @OA\Property(property="message", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Silme sırasında hata oluştu",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string"),
+     *             @OA\Property(property="message", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function destroy(Service $service)
     {
         try {

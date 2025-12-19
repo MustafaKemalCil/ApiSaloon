@@ -8,7 +8,12 @@ use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
+/**
+ * @OA\Tag(
+ *     name="Appointments",
+ *     description="Randevu yönetim işlemleri"
+ * )
+ */
 class AppointmentController extends Controller
 {
 
@@ -18,6 +23,32 @@ class AppointmentController extends Controller
 }
     /**
      * Randevu listesini getir (daily veya weekly)
+     */
+    /**
+     * @OA\Get(
+     *     path="/api/appointments",
+     *     summary="Randevu listesini getir",
+     *     tags={"Appointments"},
+     *     @OA\Parameter(
+     *         name="date",
+     *         in="query",
+     *         description="Seçilen tarih (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="view",
+     *         in="query",
+     *         description="Listeleme tipi (daily veya weekly)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Randevular listelendi"
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
      */
     public function index(Request $request)
     {
@@ -64,6 +95,31 @@ class AppointmentController extends Controller
     /**
      * Yeni randevu oluştur
      */
+     /**
+     * @OA\Post(
+     *     path="/api/appointments",
+     *     summary="Yeni randevu oluştur",
+     *     tags={"Appointments"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"customer_id","employee_id","start_datetime"},
+     *             @OA\Property(property="customer_id", type="integer", example=1),
+     *             @OA\Property(property="employee_id", type="integer", example=2),
+     *             @OA\Property(property="start_datetime", type="string", format="date-time", example="2025-12-17 10:30:00"),
+     *             @OA\Property(property="end_datetime", type="string", format="date-time", example="2025-12-17 11:00:00"),
+     *             @OA\Property(property="note", type="string", example="Ek not"),
+     *             @OA\Property(property="service", type="string", example="Kuaför"),
+     *             @OA\Property(property="cost", type="number", example=120.50)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Randevu başarıyla eklendi"
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -99,6 +155,24 @@ class AppointmentController extends Controller
     /**
      * Belirli randevuyu getir
      */
+    /**
+     * @OA\Get(
+     *     path="/api/appointments/{id}",
+     *     summary="Belirli randevuyu getir",
+     *     tags={"Appointments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Randevu bulundu"
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
+     */
     public function show($id)
     {
         $appointment = Appointment::with(['customer', 'user'])->findOrFail($id);
@@ -107,6 +181,28 @@ class AppointmentController extends Controller
 
      /**
      * Çalışan idye göre çek
+     */
+      /**
+     * @OA\Get(
+     *     path="/api/appointments/customer/{customerId}",
+     *     summary="Müşteriye ait randevuları getir",
+     *     tags={"Appointments"},
+     *     @OA\Parameter(
+     *         name="customerId",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Randevular listelendi"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Randevu bulunamadı"
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
      */
     public function showByCustomer($customerId)
     {
@@ -125,6 +221,37 @@ class AppointmentController extends Controller
     }
     /**
      * Randevuyu güncelle
+     */
+      /**
+     * @OA\Put(
+     *     path="/api/appointments/{id}",
+     *     summary="Randevuyu güncelle",
+     *     tags={"Appointments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="customer_id", type="integer"),
+     *             @OA\Property(property="employee_id", type="integer"),
+     *             @OA\Property(property="start_datetime", type="string", format="date-time"),
+     *             @OA\Property(property="end_datetime", type="string", format="date-time"),
+     *             @OA\Property(property="note", type="string"),
+     *             @OA\Property(property="service", type="string"),
+     *             @OA\Property(property="cost", type="number"),
+     *             @OA\Property(property="status", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Randevu güncellendi"
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -174,7 +301,24 @@ class AppointmentController extends Controller
             'appointment' => $appointment->load('customer', 'user')
         ]);
     }
-
+    /**
+     * @OA\Delete(
+     *     path="/api/appointments/{id}",
+     *     summary="Randevuyu sil",
+     *     tags={"Appointments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Randevu silindi"
+     *     ),
+     *     security={{"sanctum":{}}}
+     * )
+     */
     /**
      * Randevuyu sil
      */

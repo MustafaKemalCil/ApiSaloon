@@ -7,9 +7,75 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Appointment;
 use Carbon\Carbon;
-
+/**
+ * @OA\Tag(
+ *     name="Dashboard",
+ *     description="Dashboard verileri için API"
+ * )
+ */
 class DashboardController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/dashboard",
+     *     summary="Dashboard verilerini getirir",
+     *     tags={"Dashboard"},
+     *     @OA\Parameter(
+     *         name="date",
+     *         in="query",
+     *         description="Seçili tarih (Y-m-d)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="view",
+     *         in="query",
+     *         description="Görünüm tipi: daily veya weekly",
+     *         required=false,
+     *         @OA\Schema(type="string", default="daily")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dashboard verileri",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="users",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="first_name", type="string"),
+     *                     @OA\Property(property="last_name", type="string")
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="appointments",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="user_id", type="integer"),
+     *                     @OA\Property(property="status", type="string"),
+     *                     @OA\Property(property="cost", type="number", format="float"),
+     *                     @OA\Property(
+     *                         property="customer",
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer"),
+     *                         @OA\Property(property="first_name", type="string"),
+     *                         @OA\Property(property="last_name", type="string")
+     *                     ),
+     *                     @OA\Property(property="start_datetime", type="string", format="date-time"),
+     *                     @OA\Property(property="end_datetime", type="string", format="date-time", nullable=true)
+     *                 )
+     *             ),
+     *             @OA\Property(property="timeSlots", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="today", type="string", format="date"),
+     *             @OA\Property(property="viewType", type="string"),
+     *             @OA\Property(property="showDaily", type="boolean"),
+     *             @OA\Property(property="daysOfWeek", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="startOfWeek", type="string", format="date")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         $user = $request->user(); // API auth kullanıyorsan: sanctum veya token

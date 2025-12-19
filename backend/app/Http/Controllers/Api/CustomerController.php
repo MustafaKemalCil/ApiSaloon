@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;// istersen App\Http\Controllers\Api da yapab
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
-
+ 
 class CustomerController extends Controller
 {
-    // Müşteri listeleme
+     
     public function index(Request $request)
     {
         $query = Customer::query();
@@ -23,48 +23,47 @@ class CustomerController extends Controller
     }
 
 
-   // Tek müşteri görüntüleme
-// Tek müşteri görüntüleme
-public function show(Customer $customer)
-{
-    // appointments ile ilişkili user ve payments bilgilerini de yükle
-    $customer->load('appointments.user', 'appointments.payments');
+    
+    public function show(Customer $customer)
+    {
+            // appointments ile ilişkili user ve payments bilgilerini de yükle
+            $customer->load('appointments.user', 'appointments.payments');
 
-    // appointments'ı map ile user adını ve ödenen toplamı ekleyelim
-   $appointments = $customer->appointments->map(function ($appt) {
-    return [
-        'id' => $appt->id,
-        'start_datetime' => $appt->start_datetime,
-        'end_datetime' => $appt->end_datetime,
-        'service' => $appt->service,
-        'cost' => $appt->cost,
-        'note' => $appt->note,
-        'status' => $appt->status,
-        'worker_name' => $appt->user ? $appt->user->first_name . ' ' . $appt->user->last_name : null,
-        'total_payment' => $appt->payments->sum('amount'),
-        'payments' => $appt->payments->map(function ($p) {
+            // appointments'ı map ile user adını ve ödenen toplamı ekleyelim
+        $appointments = $customer->appointments->map(function ($appt) {
             return [
-                'id' => $p->id,
-                'amount' => $p->amount,
-                'method' => $p->method,
-                'note' => $p->note,
-                'created_at' => $p->created_at,
+                'id' => $appt->id,
+                'start_datetime' => $appt->start_datetime,
+                'end_datetime' => $appt->end_datetime,
+                'service' => $appt->service,
+                'cost' => $appt->cost,
+                'note' => $appt->note,
+                'status' => $appt->status,
+                'worker_name' => $appt->user ? $appt->user->first_name . ' ' . $appt->user->last_name : null,
+                'total_payment' => $appt->payments->sum('amount'),
+                'payments' => $appt->payments->map(function ($p) {
+                    return [
+                        'id' => $p->id,
+                        'amount' => $p->amount,
+                        'method' => $p->method,
+                        'note' => $p->note,
+                        'created_at' => $p->created_at,
+                    ];
+                }),
             ];
-        }),
-    ];
-});
+        });
 
 
 
 
-    return response()->json([
-        'customer' => $customer,
-        'appointments' => $appointments 
-    ]);
-}
-
+            return response()->json([
+                'customer' => $customer,
+                'appointments' => $appointments 
+            ]);
+    }
 
     // Müşteri ekleme
+     
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -85,7 +84,7 @@ public function show(Customer $customer)
         ]);
     }
 
-    // Müşteri güncelleme
+    
     public function update(Request $request, Customer $customer)
     {
         $validated = $request->validate([
@@ -106,7 +105,7 @@ public function show(Customer $customer)
         ]);
     }
 
-    // Müşteri silme
+     
     public function destroy(Customer $customer)
     {
         try {
